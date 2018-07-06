@@ -6,26 +6,29 @@ import (
 )
 
 type  BlockChain struct {
-	blocks []*Block
+	Blocks []*Block
+}
+
+func NewBlockChain() *BlockChain {
+	bc := BlockChain{}
+	genesisBlock := GenerateGenesisBlock()
+	bc.Blocks = append(bc.Blocks, &genesisBlock)
+	return &bc
 }
 
 func (bc *BlockChain) Write(data string) bool {
-	if len(bc.blocks) == 0 {
-		genesisBlock := GenerateGenesisBlock()
-		bc.blocks = append(bc.blocks, &genesisBlock)
-	}
-	preBlock := *bc.blocks[len(bc.blocks) - 1]
+	preBlock := *bc.Blocks[len(bc.Blocks) - 1]
 	newBlock := GenerateBlock(preBlock, data)
 	if !isValid(&preBlock, &newBlock) {
 		return false
 	} else {
-		bc.blocks = append(bc.blocks, &newBlock)
+		bc.Blocks = append(bc.Blocks, &newBlock)
 		return true
 	}
 }
 
 func (bc *BlockChain) Read() {
-	for _, block := range bc.blocks {
+	for _, block := range bc.Blocks {
 		fmt.Printf("Index: %d\n", block.Index)
 		fmt.Printf("Prev.Hash: %s\n", block.PreBlockHash)
 		fmt.Printf("Curr.Hash: %s\n", block.Hash)
@@ -36,8 +39,8 @@ func (bc *BlockChain) Read() {
 }
 
 func (bc *BlockChain) appendBlock(newBlock *Block) {
-	if isValid(bc.blocks[len(bc.blocks) - 1], newBlock) {
-		bc.blocks = append(bc.blocks, newBlock)
+	if isValid(bc.Blocks[len(bc.Blocks) - 1], newBlock) {
+		bc.Blocks = append(bc.Blocks, newBlock)
 	} else {
 		log.Fatal("invalid block")
 	}
